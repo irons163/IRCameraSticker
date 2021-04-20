@@ -34,7 +34,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    self.videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPresetLow cameraPosition:AVCaptureDevicePositionFront];
+    self.videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPresetHigh cameraPosition:AVCaptureDevicePositionFront];
     self.videoCamera.outputImageOrientation = UIInterfaceOrientationPortrait;
     self.videoCamera.horizontallyMirrorFrontFacingCamera = YES;
     self.videoCamera.delegate = self;
@@ -146,6 +146,7 @@
         CGFloat scaleX = self.filterView.layer.frame.size.width / size.width;
         CGFloat scaleY = self.filterView.layer.frame.size.height / size.height;
         
+//        CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(1, -1), 0, -1);
         CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(scaleX, -scaleY), 0, -1);
         
 //        let scale = CGAffineTransform.identity.scaledBy(x: viewRect.width, y: viewRect.height)
@@ -153,6 +154,9 @@
         
 //        CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(CGRectApplyAffineTransform(observedFace.boundingBox, transform), self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
         CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(CGRectApplyAffineTransform(observedFace.boundingBox, transform), size.width, size.height);
+        
+//        CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(observedFace.boundingBox, size.width, size.height);
+        
         
 //        CGRect faceBoundingBoxOnScreen = CGRectZero;
 //        faceBoundingBoxOnScreen.size.height = self.filterView.layer.frame.size.height * observedFace.boundingBox.size.width;
@@ -222,19 +226,35 @@
         [faceFeaturesDrawings addObject:eyeDrawing];
     }
     
+    AVCaptureVideoDataOutput *output = [[[self.videoCamera captureSession] outputs] lastObject];
+    NSDictionary* outputSettings = [output videoSettings];
+
+    long width  = [[outputSettings objectForKey:@"Width"]  longValue];
+    long height = [[outputSettings objectForKey:@"Height"] longValue];
+    
     if (landmarks.allPoints) {
         CGMutablePathRef eyePath = CGPathCreateMutable();
         
         CGPoint *newEyePoints = malloc(sizeof(CGPoint) * landmarks.allPoints.pointCount);
         NSMutableArray *newEyePointsArray = [NSMutableArray array];
-        const CGPoint *pointsInImage = [landmarks.allPoints pointsInImageOfSize:CGSizeMake(self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height)];
+        
+        const CGPoint *pointsInImage = [landmarks.allPoints pointsInImageOfSize:CGSizeMake(size.width, size.height)];
+        
         for (int i = 0; i < landmarks.allPoints.pointCount; i++) {
             CGPoint eyePoint = pointsInImage[i];
 
-            CGAffineTransform scale = CGAffineTransformMakeScale(self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
-            CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(1, -1), 0, -self.filterView.layer.frame.size.height);
+//            CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(1, -1), 0, -self.filterView.layer.frame.size.height);
  
-            CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(CGRectApplyAffineTransform(screenBoundingBox, transform), self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
+//            CGFloat scaleX = self.filterView.layer.frame.size.width / size.width * 3;
+//            CGFloat scaleY = self.filterView.layer.frame.size.height / size.height * 3;
+            CGFloat scaleX = (self.filterView.layer.frame.size.width / size.width) * (size.height / self.filterView.layer.frame.size.width);
+            CGFloat scaleY = (self.filterView.layer.frame.size.height / size.height) * (size.width / self.filterView.layer.frame.size.height);
+            
+//            scaleX = 0.5;
+//            scaleY = 0.5;
+            
+            CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(scaleX, -scaleY), 0, -size.height);
+            
             eyePoint = CGPointApplyAffineTransform(eyePoint, transform);
             
             newEyePoints[i] = eyePoint;
@@ -264,74 +284,38 @@
     
     CGPoint *newEyePoints = malloc(sizeof(CGPoint) * eye.pointCount);
     NSMutableArray *newEyePointsArray = [NSMutableArray array];
-//    for (int i = 0; i < eye.pointCount; i++) {
-//        CGPoint eyePoint = eye.normalizedPoints[i];
-////        eyePoint.x = eyePoint.y * screenBoundingBox.size.height + screenBoundingBox.origin.x;
-////        eyePoint.y = eyePoint.x * screenBoundingBox.size.width + screenBoundingBox.origin.y;
-//
-////        eyePoint.x = eyePoint.x * screenBoundingBox.size.width + screenBoundingBox.origin.x;
-////        eyePoint.y = -eyePoint.y * screenBoundingBox.size.height + screenBoundingBox.origin.y;
-////        CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(screenBoundingBox, self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
-//
-//        CGAffineTransform scale = CGAffineTransformMakeScale(self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
-//        CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(1, -1), 0, -self.filterView.layer.frame.size.height);
-////        CGAffineTransform transform = CGAffineTransformMakeScale(1, -1);
-////        CGAffineTransform transform = CGAffineTransformMakeTranslation(0, -1);
-//
-////        let scale = CGAffineTransform.identity.scaledBy(x: viewRect.width, y: viewRect.height)
-////            let transform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -1)
-//
-//        CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(CGRectApplyAffineTransform(screenBoundingBox, transform), self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
-//
-//
-////        eyePoint = VNImagePointForNormalizedPoint(CGPointApplyAffineTransform(eyePoint, transform), self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
-////        eyePoint = VNImagePointForNormalizedPoint(CGPointApplyAffineTransform(eyePoint, transform), screenBoundingBox.size.width, screenBoundingBox.size.height);
-////        eyePoint = VNImagePointForNormalizedPoint(CGPointApplyAffineTransform(eyePoint, transform), faceBoundingBoxOnScreen.size.width, faceBoundingBoxOnScreen.size.height);
-////        eyePoint = CGPointApplyAffineTransform(VNImagePointForNormalizedPoint(eyePoint, faceBoundingBoxOnScreen.size.width, faceBoundingBoxOnScreen.size.height), transform);
-//
-////        eyePoint = CGPointApplyAffineTransform(VNImagePointForNormalizedPoint(eyePoint, self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height), transform);
-//
-////        eyePoint = VNImagePointForNormalizedPoint(CGPointApplyAffineTransform(eyePoint, transform), faceBoundingBoxOnScreen.size.width, faceBoundingBoxOnScreen.size.height);
-//
-////        eyePoint = VNImagePointForNormalizedPoint(eyePoint, faceBoundingBoxOnScreen.size.width, faceBoundingBoxOnScreen.size.height);
-////        eyePoint = VNImagePointForNormalizedPoint(eyePoint, self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
-//
-////        VNImagePointForFaceLandmarkPoint(eye.normalizedPoints, screenBoundingBox, self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
-//
-//        newEyePoints[i] = eyePoint;
-//        [newEyePointsArray addObject:[NSValue valueWithCGPoint:eyePoint]];
-//    }
-    
-    
-//    CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(1, -1), 0, -1);
-//    CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(CGRectApplyAffineTransform(screenBoundingBox, transform), self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
-//    const CGPoint *pointsInImage = [eye pointsInImageOfSize:faceBoundingBoxOnScreen.size];
-    const CGPoint *pointsInImage = [eye pointsInImageOfSize:CGSizeMake(self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height)];
     for (int i = 0; i < eye.pointCount; i++) {
-        CGPoint eyePoint = pointsInImage[i];
+        CGPoint eyePoint = eye.normalizedPoints[i];
 //        eyePoint.x = eyePoint.y * screenBoundingBox.size.height + screenBoundingBox.origin.x;
 //        eyePoint.y = eyePoint.x * screenBoundingBox.size.width + screenBoundingBox.origin.y;
 
 //        eyePoint.x = eyePoint.x * screenBoundingBox.size.width + screenBoundingBox.origin.x;
 //        eyePoint.y = -eyePoint.y * screenBoundingBox.size.height + screenBoundingBox.origin.y;
-//        CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(screenBoundingBox, self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
+        CGRect faceBounds = VNImageRectForNormalizedRect(screenBoundingBox, size.width, size.height);
 
+        CGAffineTransform transform = CGAffineTransformScale(CGAffineTransformMakeTranslation(faceBounds.origin.x, faceBounds.origin.y), faceBounds.size.width, faceBounds.size.height);
+//        CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(faceBounds.size.width, faceBounds.size.height), faceBounds.origin.x, faceBounds.origin.y);
+        eyePoint = CGPointApplyAffineTransform(eyePoint, transform);
+        
+        
         CGFloat scaleX = self.filterView.layer.frame.size.width / size.width;
         CGFloat scaleY = self.filterView.layer.frame.size.height / size.height;
         
-        CGAffineTransform scale = CGAffineTransformMakeScale(self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
+//        CGAffineTransform scale = CGAffineTransformMakeScale(self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
 //        CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(1, -1), 0, -self.filterView.layer.frame.size.height);
-        CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(scaleX, -scaleY), 0, -size.height);
-        
+        transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(scaleX, -scaleY), 0, -size.height);
+//        transform = CGAffineTransformTranslate(CGAffineTransformScale(transform, scaleX, -scaleY), 0, -size.height);
+        eyePoint = CGPointApplyAffineTransform(eyePoint, transform);
+//        CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(1, -1), 0, -self.filterView.layer.frame.size.height);
 //        CGAffineTransform transform = CGAffineTransformMakeScale(1, -1);
 //        CGAffineTransform transform = CGAffineTransformMakeTranslation(0, -1);
 
 //        let scale = CGAffineTransform.identity.scaledBy(x: viewRect.width, y: viewRect.height)
 //            let transform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -1)
 
-        CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(CGRectApplyAffineTransform(screenBoundingBox, transform), self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
+//        CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(CGRectApplyAffineTransform(screenBoundingBox, transform), self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
 
-        eyePoint = CGPointApplyAffineTransform(eyePoint, transform);
+
 //        eyePoint = VNImagePointForNormalizedPoint(CGPointApplyAffineTransform(eyePoint, transform), self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
 //        eyePoint = VNImagePointForNormalizedPoint(CGPointApplyAffineTransform(eyePoint, transform), screenBoundingBox.size.width, screenBoundingBox.size.height);
 //        eyePoint = VNImagePointForNormalizedPoint(CGPointApplyAffineTransform(eyePoint, transform), faceBoundingBoxOnScreen.size.width, faceBoundingBoxOnScreen.size.height);
@@ -350,11 +334,68 @@
         [newEyePointsArray addObject:[NSValue valueWithCGPoint:eyePoint]];
     }
     
+    
+//    CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(1, -1), 0, -1);
+//    CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(CGRectApplyAffineTransform(screenBoundingBox, transform), self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
+//    const CGPoint *pointsInImage = [eye pointsInImageOfSize:faceBoundingBoxOnScreen.size];
+//    const CGPoint *pointsInImage = [eye pointsInImageOfSize:CGSizeMake(self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height)];
+    
+    /*
+    const CGPoint *pointsInImage = [eye pointsInImageOfSize:CGSizeMake(size.width, size.height)];
+    for (int i = 0; i < eye.pointCount; i++) {
+        CGPoint eyePoint = pointsInImage[i];
+//        eyePoint.x = eyePoint.y * screenBoundingBox.size.height + screenBoundingBox.origin.x;
+//        eyePoint.y = eyePoint.x * screenBoundingBox.size.width + screenBoundingBox.origin.y;
+
+//        eyePoint.x = eyePoint.x * screenBoundingBox.size.width + screenBoundingBox.origin.x;
+//        eyePoint.y = -eyePoint.y * screenBoundingBox.size.height + screenBoundingBox.origin.y;
+//        CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(screenBoundingBox, self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
+
+        CGFloat scaleX = self.filterView.layer.frame.size.width / size.width;
+        CGFloat scaleY = self.filterView.layer.frame.size.height / size.height;
+        
+        CGAffineTransform scale = CGAffineTransformMakeScale(self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
+//        CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(1, -1), 0, -self.filterView.layer.frame.size.height);
+        CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(scaleX, -scaleY), 0, -size.height);
+//        CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(scaleX, -scaleY), 0, -1);
+        
+//        CGAffineTransform transform = CGAffineTransformMakeScale(1, -1);
+//        CGAffineTransform transform = CGAffineTransformMakeTranslation(0, -1);
+
+//        let scale = CGAffineTransform.identity.scaledBy(x: viewRect.width, y: viewRect.height)
+//            let transform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -1)
+
+        CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(CGRectApplyAffineTransform(screenBoundingBox, transform), self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
+
+        eyePoint = CGPointApplyAffineTransform(eyePoint, transform);
+//        eyePoint = VNImagePointForNormalizedPoint(CGPointApplyAffineTransform(eyePoint, transform), self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
+//        eyePoint = VNImagePointForNormalizedPoint(CGPointApplyAffineTransform(eyePoint, transform), size.width, size.height);
+//        eyePoint = VNImagePointForNormalizedPoint(CGPointApplyAffineTransform(eyePoint, transform), screenBoundingBox.size.width, screenBoundingBox.size.height);
+//        eyePoint = VNImagePointForNormalizedPoint(CGPointApplyAffineTransform(eyePoint, transform), faceBoundingBoxOnScreen.size.width, faceBoundingBoxOnScreen.size.height);
+//        eyePoint = CGPointApplyAffineTransform(VNImagePointForNormalizedPoint(eyePoint, faceBoundingBoxOnScreen.size.width, faceBoundingBoxOnScreen.size.height), transform);
+
+//        eyePoint = CGPointApplyAffineTransform(VNImagePointForNormalizedPoint(eyePoint, self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height), transform);
+
+//        eyePoint = VNImagePointForNormalizedPoint(CGPointApplyAffineTransform(eyePoint, transform), faceBoundingBoxOnScreen.size.width, faceBoundingBoxOnScreen.size.height);
+
+//        eyePoint = VNImagePointForNormalizedPoint(eyePoint, faceBoundingBoxOnScreen.size.width, faceBoundingBoxOnScreen.size.height);
+//        eyePoint = VNImagePointForNormalizedPoint(eyePoint, self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
+
+//        VNImagePointForFaceLandmarkPoint(eye.normalizedPoints, screenBoundingBox, self.filterView.layer.frame.size.width, self.filterView.layer.frame.size.height);
+
+        newEyePoints[i] = eyePoint;
+        [newEyePointsArray addObject:[NSValue valueWithCGPoint:eyePoint]];
+    }
+    */
+    
 //    self.stickerFilter.faces = newEyePointsArray;
     
     CGPathAddLines(eyePath, nil, newEyePoints, eye.pointCount);
     CGPathCloseSubpath(eyePath);
     CAShapeLayer *eyeDrawing = [CAShapeLayer layer];
+    eyeDrawing.anchorPoint = CGPointMake(0.5, 0.5);
+    eyeDrawing.position = CGPointMake(size.width / 2, size.height / 2);
+    eyeDrawing.bounds = CGRectMake(0, 0, size.width, size.height);
     eyeDrawing.path = eyePath;
     eyeDrawing.fillColor = [UIColor clearColor].CGColor;
     eyeDrawing.strokeColor = [UIColor greenColor].CGColor;
