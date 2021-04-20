@@ -68,7 +68,6 @@
                                      isDirectory:YES];
     NSArray *resourceKeys = @[ NSURLNameKey, NSURLIsDirectoryKey, NSURLContentModificationDateKey ];
     
-    // 先获取缓存文件的相关属性
     NSDirectoryEnumerator *fileEnumerator = [_fileManager enumeratorAtURL:diskCacheURL
                                                includingPropertiesForKeys:resourceKeys
                                                                   options:NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
@@ -79,7 +78,6 @@
     
     NSMutableDictionary *cacheFiles = [NSMutableDictionary dictionary];
     
-    // 遍历目录下的所有文件
     for (NSURL *fileURL in fileEnumerator) {
         NSDictionary *resourceValues = [fileURL resourceValuesForKeys:resourceKeys error:NULL];
         
@@ -90,7 +88,6 @@
         [cacheFiles setObject:resourceValues forKey:fileURL];
     }
     
-    // 根据文件名排序
     NSArray *sortedFiles = [cacheFiles keysSortedByValueWithOptions:NSSortConcurrent
                                                     usingComparator:^NSComparisonResult(id obj1, id obj2) {
                                                         return [obj1[NSURLNameKey] localizedCompare:obj2[NSURLNameKey]];
