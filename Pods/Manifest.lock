@@ -1,0 +1,22 @@
+PODS:
+  - GPUImage (0.1.7)
+
+DEPENDENCIES:
+  - GPUImage (from `https://github.com/BradLarson/GPUImage.git`, branch `master`)
+
+EXTERNAL SOURCES:
+  GPUImage:
+    :branch: master
+    :git: https://github.com/BradLarson/GPUImage.git
+
+CHECKOUT OPTIONS:
+  GPUImage:
+    :commit: 167b0389bc6e9dc4bb0121550f91d8d5d6412c53
+    :git: https://github.com/BradLarson/GPUImage.git
+
+SPEC CHECKSUMS:
+  GPUImage: bd7e201b9aa91e85f401ed7a6d9867a07a404693
+
+PODFILE CHECKSUM: 76120142717678176c1acc2a4ee509f724b35370
+
+COCOAPODS: 1.8.4

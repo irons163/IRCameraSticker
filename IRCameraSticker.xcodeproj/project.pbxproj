@@ -7,13 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4BA978FAA1B0ED3375AA1190 /* Pods_IRCameraSticker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A1BF4A16337A0328BBD4A93 /* Pods_IRCameraSticker.framework */; };
+		B5AE4417262E808F0024F97B /* IRCameraStickerFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = B5AE4415262E808F0024F97B /* IRCameraStickerFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B5AE4418262E808F0024F97B /* IRCameraStickerFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AE4416262E808F0024F97B /* IRCameraStickerFilter.m */; };
+		B5AE4421262E80D10024F97B /* IRCameraSticker+OpenGL.h in Headers */ = {isa = PBXBuildFile; fileRef = B5AE441F262E80D10024F97B /* IRCameraSticker+OpenGL.h */; };
+		B5AE4422262E80D10024F97B /* IRCameraSticker+OpenGL.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AE4420262E80D10024F97B /* IRCameraSticker+OpenGL.m */; };
+		B5AE4427262E80F70024F97B /* IRCameraStickerItem+OpenGL.h in Headers */ = {isa = PBXBuildFile; fileRef = B5AE4425262E80F70024F97B /* IRCameraStickerItem+OpenGL.h */; };
+		B5AE4428262E80F70024F97B /* IRCameraStickerItem+OpenGL.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AE4426262E80F70024F97B /* IRCameraStickerItem+OpenGL.m */; };
+		B5AE442B262E82370024F97B /* IRCameraStickerResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B5AE442A262E82360024F97B /* IRCameraStickerResources.bundle */; };
 		B5AE450325E79848004E4783 /* IRCameraSticker.h in Headers */ = {isa = PBXBuildFile; fileRef = B5AE450125E79848004E4783 /* IRCameraSticker.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B5AE453A25EE3E30004E4783 /* IRCameraSticker.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AE453925EE3E30004E4783 /* IRCameraSticker.m */; };
+		B5AE454025EE3E56004E4783 /* IRCameraStickersManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B5AE453E25EE3E56004E4783 /* IRCameraStickersManager.h */; };
+		B5AE454125EE3E56004E4783 /* IRCameraStickersManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AE453F25EE3E56004E4783 /* IRCameraStickersManager.m */; };
+		B5AE454725EE3F55004E4783 /* IRCameraStickerItem.h in Headers */ = {isa = PBXBuildFile; fileRef = B5AE454525EE3F55004E4783 /* IRCameraStickerItem.h */; };
+		B5AE454825EE3F55004E4783 /* IRCameraStickerItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AE454625EE3F55004E4783 /* IRCameraStickerItem.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7A1BF4A16337A0328BBD4A93 /* Pods_IRCameraSticker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IRCameraSticker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A85940EE3FAB8BDA2D8D2366 /* Pods-IRCameraSticker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IRCameraSticker.debug.xcconfig"; path = "Target Support Files/Pods-IRCameraSticker/Pods-IRCameraSticker.debug.xcconfig"; sourceTree = "<group>"; };
+		B5AE4415262E808F0024F97B /* IRCameraStickerFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IRCameraStickerFilter.h; sourceTree = "<group>"; };
+		B5AE4416262E808F0024F97B /* IRCameraStickerFilter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCameraStickerFilter.m; sourceTree = "<group>"; };
+		B5AE441F262E80D10024F97B /* IRCameraSticker+OpenGL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "IRCameraSticker+OpenGL.h"; sourceTree = "<group>"; };
+		B5AE4420262E80D10024F97B /* IRCameraSticker+OpenGL.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "IRCameraSticker+OpenGL.m"; sourceTree = "<group>"; };
+		B5AE4425262E80F70024F97B /* IRCameraStickerItem+OpenGL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "IRCameraStickerItem+OpenGL.h"; sourceTree = "<group>"; };
+		B5AE4426262E80F70024F97B /* IRCameraStickerItem+OpenGL.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "IRCameraStickerItem+OpenGL.m"; sourceTree = "<group>"; };
+		B5AE442A262E82360024F97B /* IRCameraStickerResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = IRCameraStickerResources.bundle; sourceTree = "<group>"; };
 		B5AE44FE25E79848004E4783 /* IRCameraSticker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IRCameraSticker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5AE450125E79848004E4783 /* IRCameraSticker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IRCameraSticker.h; sourceTree = "<group>"; };
 		B5AE450225E79848004E4783 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B5AE453925EE3E30004E4783 /* IRCameraSticker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCameraSticker.m; sourceTree = "<group>"; };
+		B5AE453E25EE3E56004E4783 /* IRCameraStickersManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IRCameraStickersManager.h; sourceTree = "<group>"; };
+		B5AE453F25EE3E56004E4783 /* IRCameraStickersManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCameraStickersManager.m; sourceTree = "<group>"; };
+		B5AE454525EE3F55004E4783 /* IRCameraStickerItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IRCameraStickerItem.h; sourceTree = "<group>"; };
+		B5AE454625EE3F55004E4783 /* IRCameraStickerItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IRCameraStickerItem.m; sourceTree = "<group>"; };
+		C6A2866AEDFED3C011DA7F0E /* Pods-IRCameraSticker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IRCameraSticker.release.xcconfig"; path = "Target Support Files/Pods-IRCameraSticker/Pods-IRCameraSticker.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -21,17 +49,38 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4BA978FAA1B0ED3375AA1190 /* Pods_IRCameraSticker.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9868056FB9047EAD1453724E /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				A85940EE3FAB8BDA2D8D2366 /* Pods-IRCameraSticker.debug.xcconfig */,
+				C6A2866AEDFED3C011DA7F0E /* Pods-IRCameraSticker.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		A7FA6AA12B6658D0BC03D312 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7A1BF4A16337A0328BBD4A93 /* Pods_IRCameraSticker.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B5AE44F425E79848004E4783 = {
 			isa = PBXGroup;
 			children = (
 				B5AE450025E79848004E4783 /* IRCameraSticker */,
 				B5AE44FF25E79848004E4783 /* Products */,
+				9868056FB9047EAD1453724E /* Pods */,
+				A7FA6AA12B6658D0BC03D312 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -46,10 +95,30 @@
 		B5AE450025E79848004E4783 /* IRCameraSticker */ = {
 			isa = PBXGroup;
 			children = (
-				B5AE450125E79848004E4783 /* IRCameraSticker.h */,
 				B5AE450225E79848004E4783 /* Info.plist */,
+				B5AE442A262E82360024F97B /* IRCameraStickerResources.bundle */,
+				B5AE453825EE3CCC004E4783 /* Classes */,
 			);
 			path = IRCameraSticker;
+			sourceTree = "<group>";
+		};
+		B5AE453825EE3CCC004E4783 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				B5AE450125E79848004E4783 /* IRCameraSticker.h */,
+				B5AE453925EE3E30004E4783 /* IRCameraSticker.m */,
+				B5AE453E25EE3E56004E4783 /* IRCameraStickersManager.h */,
+				B5AE453F25EE3E56004E4783 /* IRCameraStickersManager.m */,
+				B5AE454525EE3F55004E4783 /* IRCameraStickerItem.h */,
+				B5AE454625EE3F55004E4783 /* IRCameraStickerItem.m */,
+				B5AE4415262E808F0024F97B /* IRCameraStickerFilter.h */,
+				B5AE4416262E808F0024F97B /* IRCameraStickerFilter.m */,
+				B5AE4425262E80F70024F97B /* IRCameraStickerItem+OpenGL.h */,
+				B5AE4426262E80F70024F97B /* IRCameraStickerItem+OpenGL.m */,
+				B5AE441F262E80D10024F97B /* IRCameraSticker+OpenGL.h */,
+				B5AE4420262E80D10024F97B /* IRCameraSticker+OpenGL.m */,
+			);
+			path = Classes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -59,7 +128,12 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5AE4427262E80F70024F97B /* IRCameraStickerItem+OpenGL.h in Headers */,
+				B5AE4417262E808F0024F97B /* IRCameraStickerFilter.h in Headers */,
+				B5AE4421262E80D10024F97B /* IRCameraSticker+OpenGL.h in Headers */,
+				B5AE454025EE3E56004E4783 /* IRCameraStickersManager.h in Headers */,
 				B5AE450325E79848004E4783 /* IRCameraSticker.h in Headers */,
+				B5AE454725EE3F55004E4783 /* IRCameraStickerItem.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +144,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B5AE450625E79848004E4783 /* Build configuration list for PBXNativeTarget "IRCameraSticker" */;
 			buildPhases = (
+				851B1095CA287D78B12E565A /* [CP] Check Pods Manifest.lock */,
 				B5AE44F925E79848004E4783 /* Headers */,
 				B5AE44FA25E79848004E4783 /* Sources */,
 				B5AE44FB25E79848004E4783 /* Frameworks */,
@@ -120,16 +195,48 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5AE442B262E82370024F97B /* IRCameraStickerResources.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		851B1095CA287D78B12E565A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-IRCameraSticker-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B5AE44FA25E79848004E4783 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5AE453A25EE3E30004E4783 /* IRCameraSticker.m in Sources */,
+				B5AE4428262E80F70024F97B /* IRCameraStickerItem+OpenGL.m in Sources */,
+				B5AE4422262E80D10024F97B /* IRCameraSticker+OpenGL.m in Sources */,
+				B5AE4418262E808F0024F97B /* IRCameraStickerFilter.m in Sources */,
+				B5AE454125EE3E56004E4783 /* IRCameraStickersManager.m in Sources */,
+				B5AE454825EE3F55004E4783 /* IRCameraStickerItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,6 +363,7 @@
 		};
 		B5AE450725E79848004E4783 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A85940EE3FAB8BDA2D8D2366 /* Pods-IRCameraSticker.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -279,6 +387,7 @@
 		};
 		B5AE450825E79848004E4783 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C6A2866AEDFED3C011DA7F0E /* Pods-IRCameraSticker.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;

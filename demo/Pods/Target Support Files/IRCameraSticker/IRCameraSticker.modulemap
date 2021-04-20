@@ -1,0 +1,6 @@
+framework module IRCameraSticker {
+  umbrella header "IRCameraSticker-umbrella.h"
+
+  export *
+  module * { export * }
+}
