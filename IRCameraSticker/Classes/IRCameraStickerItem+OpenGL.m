@@ -23,56 +23,48 @@ static void *kTexturesWrapperKey = &kTexturesWrapperKey;
 
 @end
 
-
-@implementation IRCameraStickerTexturesWrapper
-{
-    GLuint *_textureArr;
-    NSUInteger _size;
+@implementation IRCameraStickerTexturesWrapper {
+    GLuint *textureArr;
+    NSUInteger size;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [self removeAllTextures];
 }
 
-- (instancetype)initWithSize:(NSUInteger)size
-{
+- (instancetype)initWithSize:(NSUInteger)_size {
     self = [super init];
     if (self) {
-        _size = size;
+        size = _size;
     }
     
     return self;
 }
 
-- (GLuint)textureAtIndex:(NSUInteger)index
-{
-    if (_textureArr == NULL) {
-        _textureArr = (GLuint *)malloc(_size * sizeof(GLuint));
-        if (_textureArr == NULL) {
-            // 分配内存失败
+- (GLuint)textureAtIndex:(NSUInteger)index {
+    if (textureArr == NULL) {
+        textureArr = (GLuint *)malloc(size * sizeof(GLuint));
+        if (textureArr == NULL) {
             return 0;
         }
         
-        for (int i = 0; i < _size; i++) {
-            _textureArr[i] = 0;
+        for (int i = 0; i < size; i++) {
+            textureArr[i] = 0;
         }
     }
     
-    return _textureArr[index];
+    return textureArr[index];
 }
 
-- (void)setTexture:(GLuint)texture atIndex:(NSUInteger)index
-{
-    _textureArr[index] = texture;
+- (void)setTexture:(GLuint)texture atIndex:(NSUInteger)index {
+    textureArr[index] = texture;
 }
 
-- (void)removeAllTextures
-{
-    if (_textureArr) {
-        glDeleteTextures((GLsizei)_size, _textureArr);
-        free(_textureArr);
-        _textureArr = NULL;
+- (void)removeAllTextures {
+    if (textureArr) {
+        glDeleteTextures((GLsizei)size, textureArr);
+        free(textureArr);
+        textureArr = NULL;
     }
 }
 
@@ -81,8 +73,7 @@ static void *kTexturesWrapperKey = &kTexturesWrapperKey;
 
 @implementation IRCameraStickerItem (OpenGL)
 
-- (IRCameraStickerTexturesWrapper *)textures
-{
+- (IRCameraStickerTexturesWrapper *)textures {
     IRCameraStickerTexturesWrapper *wrapper = objc_getAssociatedObject(self, kTexturesWrapperKey);
     if (!wrapper) {
         wrapper = [[IRCameraStickerTexturesWrapper alloc] initWithSize:self.count];
@@ -92,8 +83,7 @@ static void *kTexturesWrapperKey = &kTexturesWrapperKey;
     return wrapper;
 }
 
-- (GLuint)_textureWithImage:(UIImage *)image
-{
+- (GLuint)_textureWithImage:(UIImage *)image {
     CGImageRef imageRef = image.CGImage;
     if (!imageRef) {
         // Failed to load image
@@ -125,8 +115,7 @@ static void *kTexturesWrapperKey = &kTexturesWrapperKey;
     return texture;
 }
 
-- (GLuint)_textureAtIndex:(NSUInteger)index
-{
+- (GLuint)_textureAtIndex:(NSUInteger)index {
     if (index >= self.count) {
         return 0;
     }
@@ -140,15 +129,13 @@ static void *kTexturesWrapperKey = &kTexturesWrapperKey;
     return texture;
 }
 
-- (GLuint)nextTextureForInterval:(NSTimeInterval)interval
-{
+- (GLuint)nextTextureForInterval:(NSTimeInterval)interval {
     self.currentFrameIndex = [self nextFrameIndexForInterval:interval];
     
     return [self _textureAtIndex:self.currentFrameIndex];
 }
 
-- (void)deleteTextures
-{
+- (void)deleteTextures {
     [[self textures] removeAllTextures];
 }
 

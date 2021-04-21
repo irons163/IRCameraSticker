@@ -7,15 +7,14 @@
 
 #import "IRCameraStickerItem.h"
 
-@interface IRCameraStickerItem()
+@interface IRCameraStickerItem ()
 
 @property (nonatomic) NSTimeInterval accumulator;
 
 @end
 
-@implementation IRCameraStickerItem
-{
-    NSArray *_imageFileURLs;
+@implementation IRCameraStickerItem {
+    NSArray *imageFileURLs;
 }
 
 - (instancetype)initWithJSONDictionary:(NSDictionary *)dict {
@@ -49,7 +48,6 @@
 }
 
 - (NSUInteger)nextFrameIndexForInterval:(NSTimeInterval)interval {
-    // 此处参考了FLAnimatedImage加载GIF的做法
     if (self.loopCountdown == 0) {
         return self.currentFrameIndex;
     }
@@ -77,22 +75,21 @@
 }
 
 - (UIImage *)imageAtIndex:(NSUInteger)index {
-    if (_imageFileURLs.count <= 0) {
+    if (imageFileURLs.count <= 0) {
         [self _loadImages];
     }
     
-    if (index >= _imageFileURLs.count) {
+    if (index >= imageFileURLs.count) {
         return nil;
     }
     
-    return [UIImage imageWithContentsOfFile:[[_imageFileURLs objectAtIndex:index] path]];
+    return [UIImage imageWithContentsOfFile:[[imageFileURLs objectAtIndex:index] path]];
 }
 
 - (void)_loadImages {
     NSURL *diskCacheURL = [NSURL fileURLWithPath:self.dir isDirectory:YES];
     NSArray *resourceKeys = @[NSURLIsDirectoryKey, NSURLContentModificationDateKey, NSURLNameKey];
     
-    // 先获取缓存文件的相关属性
     NSDirectoryEnumerator *fileEnumerator = [[NSFileManager defaultManager] enumeratorAtURL:diskCacheURL
                                                                  includingPropertiesForKeys:resourceKeys
                                                                                     options:NSDirectoryEnumerationSkipsSubdirectoryDescendants  | NSDirectoryEnumerationSkipsHiddenFiles
@@ -103,7 +100,6 @@
     
     NSMutableDictionary *imageFiles = [NSMutableDictionary dictionary];
     
-    // 遍历目录下的所有文件
     for (NSURL *fileURL in fileEnumerator) {
         NSDictionary *resourceValues = [fileURL resourceValuesForKeys:resourceKeys error:NULL];
         if ([resourceValues[NSURLIsDirectoryKey] boolValue]) {
@@ -113,7 +109,7 @@
         [imageFiles setObject:resourceValues forKey:fileURL];
     }
     
-    _imageFileURLs = [imageFiles keysSortedByValueWithOptions:NSSortConcurrent
+    imageFileURLs = [imageFiles keysSortedByValueWithOptions:NSSortConcurrent
                                               usingComparator:^NSComparisonResult(id obj1, id obj2) {
                                                   return [obj1[NSURLNameKey] compare:obj2[NSURLNameKey] options:NSNumericSearch];
                                               }];

@@ -8,53 +8,47 @@
 #import "IRCameraStickersManager.h"
 #import "IRCameraSticker.h"
 
-@implementation IRCameraStickersManager
-{
-    dispatch_queue_t _ioQueue;
-    NSFileManager *_fileManager;
+@implementation IRCameraStickersManager {
+    dispatch_queue_t ioQueue;
+    NSFileManager *fileManager;
     
-    NSBundle *_stickerBundle;
+    NSBundle *stickerBundle;
 }
 
-+ (instancetype)sharedManager
-{
-    static id _stickersManager;
++ (instancetype)sharedManager {
+    static id stickersManager;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _stickersManager = [IRCameraStickersManager new];
+        stickersManager = [IRCameraStickersManager new];
     });
     
-    return _stickersManager;
+    return stickersManager;
 }
 
-+ (void)loadStickersWithCompletion:(void (^)(NSArray<IRCameraSticker *> *))completion
-{
++ (void)loadStickersWithCompletion:(void (^)(NSArray<IRCameraSticker *> *))completion {
     [[self sharedManager] _loadStickersWithCompletion:completion];
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [super init];
     if (self) {
-        _ioQueue = dispatch_queue_create("design.asura.stickers", DISPATCH_QUEUE_SERIAL);
-        _fileManager = [[NSFileManager alloc] init];
+        ioQueue = dispatch_queue_create("design.asura.stickers", DISPATCH_QUEUE_SERIAL);
+        fileManager = [[NSFileManager alloc] init];
         
         NSString *path = [[IRCameraStickersManager getCurrentBundle] pathForResource:@"IRCameraStickerResources" ofType:@"bundle"];
-        _stickerBundle = [NSBundle bundleWithPath:path];
+        stickerBundle = [NSBundle bundleWithPath:path];
     }
     
     return self;
 }
 
-+ (NSBundle *)getCurrentBundle
-{
++ (NSBundle *)getCurrentBundle {
     return [NSBundle bundleForClass:self];
 }
 
 #pragma mark - Private
-- (void)_loadStickersWithCompletion:(void(^)(NSArray<IRCameraSticker *> *))completion
-{
-    dispatch_async(_ioQueue, ^{
+- (void)_loadStickersWithCompletion:(void(^)(NSArray<IRCameraSticker *> *))completion {
+    dispatch_async(ioQueue, ^{
         NSArray *stickers = [self _loadStickers];
         dispatch_async(dispatch_get_main_queue(), ^{
             !completion ?: completion(stickers);
@@ -62,19 +56,18 @@
     });
 }
 
-- (NSArray *)_loadStickers
-{
-    NSURL *diskCacheURL = [NSURL fileURLWithPath:[_stickerBundle.bundlePath stringByAppendingPathComponent:@"stickers"]
+- (NSArray *)_loadStickers {
+    NSURL *diskCacheURL = [NSURL fileURLWithPath:[stickerBundle.bundlePath stringByAppendingPathComponent:@"stickers"]
                                      isDirectory:YES];
     NSArray *resourceKeys = @[ NSURLNameKey, NSURLIsDirectoryKey, NSURLContentModificationDateKey ];
     
-    NSDirectoryEnumerator *fileEnumerator = [_fileManager enumeratorAtURL:diskCacheURL
-                                               includingPropertiesForKeys:resourceKeys
-                                                                  options:NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
-                                                             errorHandler:^BOOL(NSURL * _Nonnull url, NSError * _Nonnull error) {
-                                                                 NSLog(@"error: %@", error);
-                                                                 return NO;
-                                                             }];
+    NSDirectoryEnumerator *fileEnumerator = [fileManager enumeratorAtURL:diskCacheURL
+                                              includingPropertiesForKeys:resourceKeys
+                                                                 options:NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles
+                                                            errorHandler:^BOOL(NSURL * _Nonnull url, NSError * _Nonnull error) {
+        NSLog(@"error: %@", error);
+        return NO;
+    }];
     
     NSMutableDictionary *cacheFiles = [NSMutableDictionary dictionary];
     
@@ -90,8 +83,8 @@
     
     NSArray *sortedFiles = [cacheFiles keysSortedByValueWithOptions:NSSortConcurrent
                                                     usingComparator:^NSComparisonResult(id obj1, id obj2) {
-                                                        return [obj1[NSURLNameKey] localizedCompare:obj2[NSURLNameKey]];
-                                                    }];
+        return [obj1[NSURLNameKey] localizedCompare:obj2[NSURLNameKey]];
+    }];
     
     NSMutableArray *stickers = [NSMutableArray arrayWithCapacity:sortedFiles.count];
     

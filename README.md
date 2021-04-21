@@ -16,6 +16,10 @@
 
 ## How does it work?
 
+```
+Starting with iOS 13, you will get a different set of points (VNDetectFaceLandmarksRequestRevision3) 
+```
+
 - Get size of camera layer.
 ```objc
 AVCaptureVideoDataOutput *output = [[[self.videoCamera captureSession] outputs] lastObject];
