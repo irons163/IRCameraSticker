@@ -1,22 +1,21 @@
 ![Build Status](https://img.shields.io/badge/build-%20passing%20-brightgreen.svg)
 ![Platform](https://img.shields.io/badge/Platform-%20iOS%20-blue.svg)
 
-# IRMusicPlayer 
+# IRCameraSticker 
 
-- IRMusicPlayer is a powerful music player for iOS.
+- IRCameraSticker is a powerful face sticker and camera sticker for iOS.
 
 ## Features
-- Support online/local play.
-- Support to show music cover.
-- Support randon mode.
-- Support repeat modes: repeat all musics once, repeat current music forever, repeat all musics forever.
+- Support face sticker.
+- Support GPUImage.
 
 ## Future
-- Support background play.
+- Support more customized settings.
 
 ## How does it work?
 
-```
+- Using `VNDetectFaceLandmarksRequestRevision3`
+```objc
 Starting with iOS 13, you will get a different set of points (VNDetectFaceLandmarksRequestRevision3) 
 ```
 
@@ -30,6 +29,8 @@ long height = [[outputSettings objectForKey:@"Height"] longValue];
 ```
 
 - Conver points
+
+- 1. Method one
 ```objc
 size_t width = CVPixelBufferGetWidth(CVPixelBufferRef);
 size_t height = CVPixelBufferGetHeight(CVPixelBufferRef);
@@ -44,6 +45,7 @@ CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeSc
 CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(CGRectApplyAffineTransform(observedFace.boundingBox, transform), size.width, size.height);
 ```
 
+- 2. Method two
 ```objc
 CGRect faceBoundingBoxOnScreen = CGRectZero;
 faceBoundingBoxOnScreen.size.height = self.filterView.layer.frame.size.height * observedFace.boundingBox.size.height;
@@ -54,7 +56,7 @@ faceBoundingBoxOnScreen.origin.y = observedFace.boundingBox.origin.y * self.filt
 
 - Eyes
 
-- 1.
+- 1. Method one
 ```objc
 for (int i = 0; i < eye.pointCount; i++) {
     CGPoint eyePoint = eye.normalizedPoints[i];
@@ -73,7 +75,7 @@ for (int i = 0; i < eye.pointCount; i++) {
 }
 ```
 
-- 2.
+- 2. Method two
 ```objc
 const CGPoint *pointsInImage = [eye pointsInImageOfSize:CGSizeMake(size.width, size.height)];
 for (int i = 0; i < eye.pointCount; i++) {
@@ -118,41 +120,199 @@ for (int i = 0; i < landmarks.allPoints.pointCount; i++) {
 - You can remove the `demo` and `ScreenShots` folder.
 
 ### Cocoapods
-- Add `pod 'IRMusicPlayer'`  in the `Podfile`
+- Add `pod 'IRCameraSticker'`  in the `Podfile`
 - `pod install`
 
 ## Usage
 
 ### Basic
+
+- Setup Camera
 ```obj-c
-@import IRMusicPlayer;
+#import <GPUImage/GPUImage.h>
 
-MusicPlayerViewController *vc = [[MusicPlayerViewController alloc] initWithNibName:@"MusicPlayerViewController" bundle:xibBundle];
+#import "IRCameraSticker.h"
+#import "IRCameraStickerFilter.h"
+#import "IRCameraStickersManager.h"
 
-[vc.musicListArray addObject:@{@"musicAddress": [[NSBundle mainBundle] pathForResource:@"1" ofType:@"mp3"]}];
-[vc.musicListArray addObject:@{@"musicAddress": [[NSBundle mainBundle] pathForResource:@"2" ofType:@"mp3"]}];
-[vc.musicListArray addObject:@{@"musicAddress": [[NSBundle mainBundle] pathForResource:@"3" ofType:@"mp3"]}];
+self.videoCamera = [[GPUImageVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPresetHigh cameraPosition:AVCaptureDevicePositionFront];
+self.videoCamera.outputImageOrientation = UIInterfaceOrientationPortrait;
+self.videoCamera.horizontallyMirrorFrontFacingCamera = YES;
+self.videoCamera.delegate = self;
+```
 
-[self presentViewController:vc animated:YES completion:nil];
+- Setup `IRCameraStickerFilter` and `GPUImageView`
+```objc
+self.stickerFilter = [IRCameraStickerFilter new];
+[self.videoCamera addTarget:self.stickerFilter];
+
+self.filterView = [[GPUImageView alloc] initWithFrame:self.view.bounds];
+self.filterView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
+self.filterView.center = self.view.center;
+
+[self.view addSubview:self.filterView];
+
+self.filterView.layer.frame = self.view.frame;
+
+[self.stickerFilter addTarget:self.filterView];
+```
+
+- Start Camera
+```objc
+[self.videoCamera startCameraCapture];
+```
+
+- LoadSticker
+```objc
+[IRCameraStickersManager loadStickersWithCompletion:^(NSArray<IRCameraSticker *> *stickers) {
+    self.stickers = stickers;
+    self.stickerFilter.sticker = [stickers firstObject];
+}];
+```
+
+- Set callbacks and detect face then detail with it. 
+```objc
+#pragma mark - GPUImageVideoCameraDelegate
+- (void)willOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer {
+    CVImageBufferRef frame = CMSampleBufferGetImageBuffer(sampleBuffer);
+    [self detectFace:frame];
+}
+
+- (void)detectFace:(CVPixelBufferRef)image {
+    size_t width = CVPixelBufferGetWidth(image);
+    size_t height = CVPixelBufferGetHeight(image);
+    
+    VNDetectFaceLandmarksRequest *faceDetectionRequest = [[VNDetectFaceLandmarksRequest alloc] initWithCompletionHandler:^(VNRequest * _Nonnull request, NSError * _Nullable error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([request.results isKindOfClass:[NSArray<VNFaceObservation *> class]]) {
+                [self handleFaceDetectionResults:request.results size:CGSizeMake(width, height)];
+            } else {
+                [self clearDrawings];
+            }
+        });
+    }];
+    
+    VNImageRequestHandler *imageRequestHandler = [[VNImageRequestHandler alloc] initWithCVPixelBuffer:image orientation:kCGImagePropertyOrientationLeftMirrored options:0];
+    [imageRequestHandler performRequests:@[faceDetectionRequest] error:nil];
+}
+
+- (void)handleFaceDetectionResults:(NSArray<VNFaceObservation *> *)observedFaces size:(CGSize)size {
+    [self clearDrawings];
+    
+    NSMutableArray<CAShapeLayer *> *facesBoundingBoxes = [NSMutableArray array];
+    
+    for (VNFaceObservation *observedFace in observedFaces) {
+        if (observedFace.landmarks) {
+            [newDrawings addObjectsFromArray:[self drawFaceFeatures:observedFace.landmarks WithBoundingBox:observedFace.boundingBox size:size]];
+        }
+        [facesBoundingBoxes addObjectsFromArray:newDrawings];
+        
+        for (CAShapeLayer *faceBoundingBox in facesBoundingBoxes) {
+            [self.filterView.layer addSublayer:faceBoundingBox];
+        }
+        
+        self.drawings = facesBoundingBoxes;
+    }
+}
+    
+- (void)clearDrawings {
+    for (CAShapeLayer *drawing in self.drawings) {
+        [drawing removeFromSuperlayer];
+    }
+}
+
+- (NSMutableArray<CAShapeLayer *> *)drawFaceFeatures:(VNFaceLandmarks2D *)landmarks WithBoundingBox:(CGRect)screenBoundingBox size:(CGSize)size {
+    NSMutableArray<CAShapeLayer *> *faceFeaturesDrawings = [NSMutableArray array];
+    if (landmarks.allPoints) {
+        NSMutableArray *newAllPointsArray = [NSMutableArray array];
+        const CGPoint *pointsInImage = [landmarks.allPoints pointsInImageOfSize:CGSizeMake(size.width, size.height)];
+        for (int i = 0; i < landmarks.allPoints.pointCount; i++) {
+            CGPoint eyePoint = pointsInImage[i];
+
+            CGFloat scaleX = (self.filterView.layer.frame.size.width / size.width) * (size.height / self.filterView.layer.frame.size.width);
+            CGFloat scaleY = (self.filterView.layer.frame.size.height / size.height) * (size.width / self.filterView.layer.frame.size.height);
+            
+            CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(scaleX, -scaleY), 0, -size.height);
+            
+            eyePoint = CGPointApplyAffineTransform(eyePoint, transform);
+            
+            [newAllPointsArray addObject:[NSValue valueWithCGPoint:eyePoint]];
+        }
+        
+        self.stickerFilter.faces = @[newAllPointsArray];
+    }
+    
+    return faceFeaturesDrawings;
+}
+
 ```
 
 ### Advanced settings
-- Use `MusicPlayerViewCallBackDelegate`.
+
+- Draw Face's bound.
 ```obj-c
-@protocol MusicPlayerViewCallBackDelegate <NSObject>
--(void)didMusicChange:(NSString*)path;
-@end
+CGFloat scaleX = self.filterView.layer.frame.size.width / size.width;
+CGFloat scaleY = self.filterView.layer.frame.size.height / size.height;
+
+CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(scaleX, -scaleY), 0, -1);
+CGRect faceBoundingBoxOnScreen = VNImageRectForNormalizedRect(CGRectApplyAffineTransform(observedFace.boundingBox, transform), size.width, size.height);
+
+CGPathRef faceBoundingBoxPath = CGPathCreateWithRect(faceBoundingBoxOnScreen, nil);
+CAShapeLayer *faceBoundingBoxShape = [CAShapeLayer layer];
+faceBoundingBoxShape.path = faceBoundingBoxPath;
+faceBoundingBoxShape.fillColor = [UIColor clearColor].CGColor;
+faceBoundingBoxShape.strokeColor = [UIColor greenColor].CGColor;
+NSMutableArray<CAShapeLayer *> *newDrawings = [NSMutableArray array];
+[newDrawings addObject:faceBoundingBoxShape];
 ```
 
-- Set `musicIndex` to controll which you want to play.
+- Draw Eyes' bounds.
 ```obj-c
-musicPlayerVC.musicIndex = 1;
-[musicPlayerVC doPlay];
-```
 
-- Make your custome music cover image.
-```obj-c
-musicPlayerVC.coverView.image = <Csutom image>;
+...
+if (landmarks.leftEye) {
+    CAShapeLayer *eyeDrawing = [self drawEye:landmarks.leftEye WithBoundingBox:screenBoundingBox size:size];
+    [faceFeaturesDrawings addObject:eyeDrawing];
+}
+if (landmarks.rightEye) {
+    CAShapeLayer *eyeDrawing = [self drawEye:landmarks.rightEye WithBoundingBox:screenBoundingBox size:size];
+    [faceFeaturesDrawings addObject:eyeDrawing];
+}
+...
+
+- (CAShapeLayer *)drawEye:(VNFaceLandmarkRegion2D *)eye WithBoundingBox:(CGRect)screenBoundingBox size:(CGSize)size {
+    CGMutablePathRef eyePath = CGPathCreateMutable();
+    
+    CGPoint *newEyePoints = malloc(sizeof(CGPoint) * eye.pointCount);
+    NSMutableArray *newEyePointsArray = [NSMutableArray array];
+
+    const CGPoint *pointsInImage = [eye pointsInImageOfSize:CGSizeMake(size.width, size.height)];
+    for (int i = 0; i < eye.pointCount; i++) {
+        CGPoint eyePoint = pointsInImage[i];
+
+        CGFloat scaleX = self.filterView.layer.frame.size.width / size.width;
+        CGFloat scaleY = self.filterView.layer.frame.size.height / size.height;
+        
+        CGAffineTransform transform = CGAffineTransformTranslate(CGAffineTransformMakeScale(scaleX, -scaleY), 0, -size.height);
+
+        eyePoint = CGPointApplyAffineTransform(eyePoint, transform);
+
+        newEyePoints[i] = eyePoint;
+        [newEyePointsArray addObject:[NSValue valueWithCGPoint:eyePoint]];
+    }
+    
+    CGPathAddLines(eyePath, nil, newEyePoints, eye.pointCount);
+    CGPathCloseSubpath(eyePath);
+    CAShapeLayer *eyeDrawing = [CAShapeLayer layer];
+    eyeDrawing.anchorPoint = CGPointMake(0.5, 0.5);
+    eyeDrawing.position = CGPointMake(size.width / 2, size.height / 2);
+    eyeDrawing.bounds = CGRectMake(0, 0, size.width, size.height);
+    eyeDrawing.path = eyePath;
+    eyeDrawing.fillColor = [UIColor clearColor].CGColor;
+    eyeDrawing.strokeColor = [UIColor greenColor].CGColor;
+    
+    return eyeDrawing;
+}
 ```
 
 ## Screenshots
