@@ -6,7 +6,7 @@
 - IRCameraSticker is a powerful face sticker and camera sticker for iOS.
 
 ## Screenshots
-![Demo](./ScreenShots/demo1.png)
+<img src="./ScreenShots/demo1.png" width=30%>
 
 ## Features
 - Support face sticker.
