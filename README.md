@@ -5,6 +5,9 @@
 
 - IRCameraSticker is a powerful face sticker and camera sticker for iOS.
 
+## Screenshots
+![Demo](./ScreenShots/demo1.png)
+
 ## Features
 - Support face sticker.
 - Support GPUImage.
@@ -12,12 +15,26 @@
 ## Future
 - Support more customized settings.
 
+## Install
+### Git
+- Git clone this project.
+- Copy this project into your own project.
+- Add the .xcodeproj into you  project and link it as embed framework.
+#### Options
+- You can remove the `demo` and `ScreenShots` folder.
+
+### Cocoapods
+- Add `pod 'IRCameraSticker'`  in the `Podfile`
+- `pod install`
+
 ## How does it work?
 
 - Using `VNDetectFaceLandmarksRequestRevision3`
 ```objc
 Starting with iOS 13, you will get a different set of points (VNDetectFaceLandmarksRequestRevision3) 
 ```
+
+![VNDetectFaceLandmarksRequestRevision3](./ScreenShots/Revision3.png)
 
 - Get size of camera layer.
 ```objc
@@ -29,6 +46,7 @@ long height = [[outputSettings objectForKey:@"Height"] longValue];
 ```
 
 - Conver points
+    - There are two methods to convert.
 
 - 1. Method one
 ```objc
@@ -55,6 +73,7 @@ faceBoundingBoxOnScreen.origin.y = observedFace.boundingBox.origin.y * self.filt
 ```
 
 - Eyes
+    - There are two methods to draw.
 
 - 1. Method one
 ```objc
@@ -111,17 +130,6 @@ for (int i = 0; i < landmarks.allPoints.pointCount; i++) {
 }
 ```
 
-## Install
-### Git
-- Git clone this project.
-- Copy this project into your own project.
-- Add the .xcodeproj into you  project and link it as embed framework.
-#### Options
-- You can remove the `demo` and `ScreenShots` folder.
-
-### Cocoapods
-- Add `pod 'IRCameraSticker'`  in the `Podfile`
-- `pod install`
 
 ## Usage
 
@@ -315,5 +323,6 @@ if (landmarks.rightEye) {
 }
 ```
 
-## Screenshots
-![Demo](./ScreenShots/Revision3.png)
+### Thanks list
+##### This project is inspired from [FaceTracker](https://github.com/anuragajwani/FaceTracker).
+##### This project is inspired from [CameraStickerDemo](https://github.com/jiangyongchang126/CameraStickerDemo).
